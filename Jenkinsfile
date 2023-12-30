@@ -82,15 +82,19 @@ pipeline{
                }
             }
         }
-         stage('Docker Image Scan: trivy '){
-         when { expression {  params.action == 'create' } }
-            steps{
-               script{
-                   
-                   dockerImageScan("${params.ImageName}","${params.ImageTag}","${params.DockerHubUser}")
-               }
+stage('Docker Image Scan: trivy') {
+    when {
+        expression { params.action == 'create' }
+    }
+    steps {
+        script {
+            timeout(time: 90, unit: 'MINUTES') {
+                // Increase the timeout value as needed (30 minutes is just an example)
+                dockerImageScan("${params.ImageName}", "${params.ImageTag}", "${params.DockerHubUser}")
             }
         }
+    }
+}
         stage('Docker Image Push : DockerHub '){
          when { expression {  params.action == 'create' } }
             steps{
